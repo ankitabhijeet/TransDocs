@@ -8,199 +8,77 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<style>
-    /* Sidebar styles */
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: -250px; /* Hidden initially */
-        width: 250px;
-        height: 100%;
-        background-color: #343a40;
-        color: white;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-        overflow-y: auto;
-        transition: left 0.3s ease;
-        z-index: 1050; /* Above everything */
-    }
-
-    .sidebar.active {
-        left: 0; /* Visible when active */
-    }
-
-    .sidebar .close-btn {
-        font-size: 24px;
-        color: white;
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        cursor: pointer;
-    }
-
-    .sidebar .nav-item a {
-        color: white;
-        text-decoration: none;
-        padding: 10px 15px;
-        display: block;
-    }
-
-    .sidebar .nav-item a:hover {
-        background-color: #495057;
-        text-decoration: none;
-    }
-
-    /* Hamburger menu styles */
-    .hamburger {
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        font-size: 28px;
-        cursor: pointer;
-        color: #333;
-        z-index: 1100; /* Above the sidebar */
-        transition: transform 0.3s ease;
-    }
-
-
-    /* Body overlay when sidebar is open */
-    .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1049; /* Below sidebar but above the rest */
-        display: none;
-    }
-
-    .overlay.active {
-        display: block;
-    }
-    .nav-item{
-        padding-top:30px;
-    }
-
-
-    
-</style>
 <body>
-    <div class="hamburger">
-        <i class="fas fa-bars"></i>
-    </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <span class="close-btn">&times;</span>
-        <nav class="nav flex-column">
-            <div class="nav-item">
-                <a href="{{ url_for('index') }}">Home</a>
-            </div>
-            <div class="nav-item">
-                <a href="#features">Features</a>
-            </div>
-            <div class="nav-item">
-                <a href="#about">About Us</a>
-            </div>
-            <div class="nav-item">
-                <a href="#contact">Contact</a>
-            </div>
-        </nav>
-    </div>
-
-    <!-- Body Overlay -->
-    <div class="overlay"></div>
-    
-   
     <div class="container mt-5">
-            <div class="logo-container">
-                <svg class="logo" viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <circle cx="50" cy="40" r="30" fill="url(#logoGradient)" class="logo-circle" />
-                    <path d="M35,40 L45,30 L55,40 L65,30" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="logo-lines" />
-                    <path d="M35,50 L45,40 L55,50 L65,40" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="logo-lines" />
+        <div class="logo-container">
+            <svg class="logo" viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="50" cy="40" r="30" fill="url(#logoGradient)" class="logo-circle" />
+                <path d="M35,40 L45,30 L55,40 L65,30" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="logo-lines" />
+                <path d="M35,50 L45,40 L55,50 L65,40" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="logo-lines" />
 
-                    <text x="95" y="32" font-family="Poppins, sans-serif" font-size="24" font-weight="700" fill="#333" class="logo-text">Transformo</text>
-                    <text x="95" y="58" font-family="Poppins, sans-serif" font-size="24" font-weight="700" fill="#4CAF50" class="logo-text">Docs</text>
-                </svg>
-            </div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
-                    {% for folder in current_path.split('/') %}
-                    {% if folder %}
-                    <li class="breadcrumb-item"><a href="{{ url_for('index', path='/'.join(current_path.split('/')[:loop.index])) }}">{{ folder }}</a></li>
-                    {% endif %}
-                    {% endfor %}
-                </ol>
-            </nav>
-            <div id="search-container">
-                <div class="mb-3">
-                    <div class="input-group">
-                        <input type="text" id="search" class="form-control" placeholder="Search files...">
-                        <select id="search-type" class="form-select">
-                            <option value="name">Search by Name</option>
-                            <option value="content">Search by Content</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
+                <text x="95" y="32" font-family="Poppins, sans-serif" font-size="24" font-weight="700" fill="#333" class="logo-text">Transformo</text>
+                <text x="95" y="58" font-family="Poppins, sans-serif" font-size="24" font-weight="700" fill="#4CAF50" class="logo-text">Docs</text>
+            </svg>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                {% for folder in current_path.split('/') %}
+                {% if folder %}
+                <li class="breadcrumb-item"><a href="{{ url_for('index', path='/'.join(current_path.split('/')[:loop.index])) }}">{{ folder }}</a></li>
+                {% endif %}
+                {% endfor %}
+            </ol>
+        </nav>
+        <div id="search-container">
             <div class="mb-3">
-                <button id="create-folder-btn" class="btn btn-primary"><i class="fas fa-folder-plus"></i> Create Folder</button>
-                <button id="upload-btn" class="btn btn-success"><i class="fas fa-upload"></i> Upload File</button>
-                <button id="download-btn" class="btn btn-info" disabled><i class="fas fa-download"></i> Download</button>
-                <button id="download-converted-btn" class="btn btn-secondary" disabled><i class="fas fa-file-alt"></i> Download Converted</button>
-                <button id="delete-btn" class="btn btn-danger" disabled><i class="fas fa-trash"></i> Delete</button>
-                <button id="copy-btn" class="btn btn-secondary" disabled><i class="fas fa-copy"></i> Copy</button>
-                <button id="cut-btn" class="btn btn-warning" disabled><i class="fas fa-cut"></i> Cut</button>
-                <button id="paste-btn" class="btn btn-light" disabled><i class="fas fa-paste"></i> Paste</button>
-                <button id="view-btn" class="btn btn-info" disabled><i class="fas fa-eye"></i> View</button>
-            </div>
-
-            <form id="upload-form" class="mb-3" style="display: none;">
                 <div class="input-group">
-                    <input type="file" class="form-control" id="file-input" name="file" multiple>
-                    <button class="btn btn-primary" type="submit">Upload</button>
+                    <input type="text" id="search" class="form-control" placeholder="Search files...">
+                    <select id="search-type" class="form-select">
+                        <option value="name">Search by Name</option>
+                        <option value="content">Search by Content</option>
+                    </select>
                 </div>
-            </form>
+            </div>
+        </div>
 
-            <ul id="file-list" class="list-group"> <!-- Uploaded files will be dynamically added here --> </ul>
-            </ul>
-            
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script>
-               
-            $(document).ready(function () {
-                const sidebar = $('.sidebar');
-                const overlay = $('.overlay');
-                const hamburger = $('.hamburger');
-                const closeBtn = $('.close-btn');
-    
-                // Open sidebar
-                hamburger.on('click', function () {
-                    sidebar.addClass('active');
-                    overlay.addClass('active');
-                });
-    
-                // Close sidebar
-                closeBtn.on('click', function () {
-                    sidebar.removeClass('active');
-                    overlay.removeClass('active');
-                });
-    
-                // Close sidebar when clicking on the overlay
-                overlay.on('click', function () {
-                    sidebar.removeClass('active');
-                    overlay.removeClass('active');
-                });
-            });
-          
+        <div class="mb-3">
+            <button id="create-folder-btn" class="btn btn-primary"><i class="fas fa-folder-plus"></i> Create Folder</button>
+            <button id="upload-btn" class="btn btn-success"><i class="fas fa-upload"></i> Upload File</button>
+            <button id="download-btn" class="btn btn-info" disabled><i class="fas fa-download"></i> Download</button>
+            <button id="download-converted-btn" class="btn btn-secondary" disabled><i class="fas fa-file-alt"></i> Download Converted</button>
+            <button id="delete-btn" class="btn btn-danger" disabled><i class="fas fa-trash"></i> Delete</button>
+            <button id="copy-btn" class="btn btn-secondary" disabled><i class="fas fa-copy"></i> Copy</button>
+            <button id="cut-btn" class="btn btn-warning" disabled><i class="fas fa-cut"></i> Cut</button>
+            <button id="paste-btn" class="btn btn-light" disabled><i class="fas fa-paste"></i> Paste</button>
+            <button id="view-btn" class="btn btn-primary" disabled><i class="fas fa-eye"></i> View</button>
+
+        </div>
+
+        <form id="upload-form" class="mb-3" style="display: none;">
+            <div class="input-group">
+                <input type="file" class="form-control" id="file-input" name="file" multiple>
+                <button class="btn btn-primary" type="submit">Upload</button>
+            </div>
+        </form>
+
+        <ul id="file-list" class="list-group">
+        </ul>
+       
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+
 
             $(document).ready(function () {
                 var currentPath = '{{ current_path }}';
@@ -415,7 +293,7 @@
                         });
                     }
                 });
-                
+              
                 function performSearch() {
                     var query = $('#search').val().toLowerCase();
                     var searchType = $('#search-type').val();
@@ -507,6 +385,340 @@
                 refreshFileList('');
             });
 
-        </script>
+      
+
+        var currentPath = '{{ current_path }}';
+
+        class FileViewer {
+            constructor() {
+                this.setupModal();
+                this.setupEventListeners();
+                // Initialize textOverlay after modal setup
+                this.textOverlay = document.getElementById('textOverlay');
+            }
+
+            setupModal() {
+                if (!document.getElementById('fileViewerModal')) {
+                    const modalHTML = `
+                <div id="fileViewerModal" class="modal-backdrop">
+                    <div class="modal-container">
+                        <div class="modal-header">
+                            <div class="modal-title">File Viewer</div>
+                            <div class="viewer-controls">
+                                <button class="btn btn-sm btn-primary toggle-text-btn">
+                                    <i class="fas fa-font"></i> Toggle Text Layer
+                                </button>
+                                <button class="btn btn-sm btn-secondary copy-text-btn">
+                                    <i class="fas fa-copy"></i> Copy All Text
+                                </button>
+                            </div>
+                            <button class="modal-close">&times;</button>
+                        </div>
+                        <div class="modal-content">
+                            <div id="viewerContent" class="viewer-content"></div>
+                            <div id="textOverlay" class="text-overlay"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+                    document.body.insertAdjacentHTML('beforeend', modalHTML);
+                }
+
+                if (!document.getElementById('fileViewerStyles')) {
+                    const styles = `
+                <style id="fileViewerStyles">
+                    .modal-backdrop {
+                        display: none;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.5);
+                        z-index: 9999;
+                    }
+                    .modal-container {
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: white;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        width: 90%;
+                        height: 90%;
+                        z-index: 10000;
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    .modal-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding-bottom: 10px;
+                        border-bottom: 1px solid #eee;
+                        margin-bottom: 10px;
+                    }
+                    .modal-content {
+                        flex-grow: 1;
+                        overflow: auto;
+                        position: relative;
+                    }
+                   
+                    .viewer-content iframe,
+                     .viewer-content {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .viewer-content img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+                    .modal-close {
+                        background: none;
+                        border: none;
+                        font-size: 1.5rem;
+                        cursor: pointer;
+                        padding: 5px;
+                    }
+                     .text-overlay {
+        position: absolute;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .text-overlay.active {
+        pointer-events: auto;
+    }
+
+    .text-overlay .text-block {
+        position: absolute;
+        background: transparent;
+        color: transparent;
+        cursor: text;
+        user-select: text;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        transform-origin: left top;
+    }
+
+    .text-overlay.show-text .text-block {
+        background: rgba(255, 255, 255, 0.4);
+        color: black;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .text-overlay .text-block::selection {
+        background: rgba(180, 213, 254, 0.8);
+    }
+                </style>
+            `;
+                    document.head.insertAdjacentHTML('beforeend', styles);
+                }
+
+                this.modal = document.getElementById('fileViewerModal');
+                this.viewerContent = document.getElementById('viewerContent');
+            }
+
+            async loadTextLayer(filePath) {
+                try {
+                    const response = await fetch(`/extract_text/${encodeURIComponent(filePath)}`);
+                    const data = await response.json();
+
+                    if (data.text && data.text.length > 0) {
+                        this.textOverlay.innerHTML = '';
+                        const img = this.viewerContent.querySelector('img');
+
+                        if (img) {
+                            // Wait for image to be fully loaded
+                            await new Promise(resolve => {
+                                if (img.complete) resolve();
+                                else img.onload = resolve;
+                            });
+
+                            // Get the actual dimensions
+                            const imgRect = img.getBoundingClientRect();
+                            const containerRect = this.viewerContent.getBoundingClientRect();
+
+                            // Calculate scaling based on actual image display size
+                            const scaleX = imgRect.width / img.naturalWidth;
+                            const scaleY = imgRect.height / img.naturalHeight;
+
+                            // Calculate offset to center the text overlay
+                            const offsetX = (containerRect.width - imgRect.width) / 2;
+                            const offsetY = (containerRect.height - imgRect.height) / 2;
+
+                            data.text.forEach(block => {
+                                if (block.text.trim()) {
+                                    const div = document.createElement('div');
+                                    div.className = 'text-block';
+                                    div.textContent = block.text;
+
+                                    // Apply scaled position and offset
+                                    div.style.left = `${(block.bbox.x * scaleX) + offsetX}px`;
+                                    div.style.top = `${(block.bbox.y * scaleY) + offsetY}px`;
+                                    div.style.width = `${block.bbox.width * scaleX}px`;
+                                    div.style.height = `${block.bbox.height * scaleY}px`;
+                                    div.style.fontSize = `${Math.max(12, block.bbox.height * scaleY)}px`; // Scale font size
+                                    div.style.lineHeight = `${block.bbox.height * scaleY}px`; // Match line height
+
+                                    this.textOverlay.appendChild(div);
+                                }
+                            });
+
+                            // Update styles for better alignment
+                            this.textOverlay.style.width = `${imgRect.width}px`;
+                            this.textOverlay.style.height = `${imgRect.height}px`;
+                            this.textOverlay.style.left = `${offsetX}px`;
+                            this.textOverlay.style.top = `${offsetY}px`;
+                            this.textOverlay.classList.add('active');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading text layer:', error);
+                }
+            }
+
+           
+
+            setupEventListeners() {
+                const closeButton = this.modal.querySelector('.modal-close');
+                const toggleTextBtn = this.modal.querySelector('.toggle-text-btn');
+                const copyTextBtn = this.modal.querySelector('.copy-text-btn');
+
+                closeButton.addEventListener('click', () => this.close());
+                toggleTextBtn.addEventListener('click', () => this.toggleTextLayer());
+                copyTextBtn.addEventListener('click', () => this.copyAllText());
+
+                this.modal.addEventListener('click', (e) => {
+                    if (e.target === this.modal) this.close();
+                });
+            }
+
+            async open(filePath) {
+                this.modal.style.display = 'block';
+                await this.loadFile(filePath);
+            }
+
+            close() {
+                this.modal.style.display = 'none';
+                this.viewerContent.innerHTML = '';
+                this.textOverlay.innerHTML = '';
+            }
+
+            async loadFile(filePath) {
+                const extension = filePath.split('.').pop().toLowerCase();
+                const fileName = filePath.split('/').pop();
+                this.modal.querySelector('.modal-title').textContent = fileName;
+
+                // Load visual content first
+                await this.loadVisualContent(filePath, extension);
+
+                // Then load text layer for images and PDFs
+                if (['png', 'jpg', 'jpeg', 'gif', 'pdf'].includes(extension)) {
+                    await this.loadTextLayer(filePath);
+                }
+            }
+
+            loadVisualContent(filePath, extension) {
+                return new Promise((resolve) => {
+                    switch (extension) {
+                        case 'pdf':
+                        case 'docx':
+                        case 'doc':
+                            const iframe = document.createElement('iframe');
+                            iframe.src = `/view_file/${encodeURIComponent(filePath)}`;
+                            this.viewerContent.innerHTML = '';
+                            this.viewerContent.appendChild(iframe);
+                            break;
+
+                        case 'png':
+                        case 'jpg':
+                        case 'jpeg':
+                        case 'gif':
+                            const img = document.createElement('img');
+                            img.src = `/view_file/${encodeURIComponent(filePath)}`;
+                            img.onload = () => resolve();
+                            this.viewerContent.innerHTML = '';
+                            this.viewerContent.appendChild(img);
+                            break;
+
+                        case 'xlsx':
+                        case 'xls':
+                            const excelFrame = document.createElement('iframe');
+                            excelFrame.src = `/view_file/${encodeURIComponent(filePath)}`;
+                            this.viewerContent.innerHTML = '';
+                            this.viewerContent.appendChild(excelFrame);
+                            break;
+
+                        default:
+                            this.viewerContent.innerHTML = 'Unsupported file type';
+                    }
+                    resolve();
+                });
+            }
+
+            
+
+            toggleTextLayer() {
+                this.textOverlay.classList.toggle('show-text');
+            }
+
+            copyAllText() {
+                const text = Array.from(this.textOverlay.querySelectorAll('.text-block'))
+                    .map(block => block.textContent)
+                    .join('\n');
+
+                navigator.clipboard.writeText(text)
+                    .then(() => alert('Text copied to clipboard!'))
+                    .catch(err => {
+                        console.error('Failed to copy text:', err);
+                        alert('Failed to copy text. Please try selecting and copying manually.');
+                    });
+            }
+        }
+
+        // Initialize file viewer and handle view button clicks
+        $(document).ready(function () {
+            window.fileViewer = new FileViewer();
+
+            $('#view-btn').click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const selectedFiles = $('input[type="checkbox"][data-type="file"]:checked');
+
+                if (selectedFiles.length === 1) {
+                    const fileName = selectedFiles.first().data('name');
+                    const filePath = currentPath ? `${currentPath}/${fileName}` : fileName;
+                    const ext = fileName.split('.').pop().toLowerCase();
+                    const viewableTypes = ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'xlsx', 'xls', 'docx', 'doc'];
+
+                    if (viewableTypes.includes(ext)) {
+                        window.fileViewer.open(filePath);
+                    } else {
+                        alert('This file type is not supported for viewing.');
+                    }
+                } else if (selectedFiles.length === 0) {
+                    alert('Please select a file to view.');
+                } else {
+                    alert('Multiple files cannot be viewed simultaneously.');
+                }
+            });
+        });
+
+    
+
+
+    </script>
 </body>
 </html>
