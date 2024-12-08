@@ -302,7 +302,45 @@ def upload_file():
         except Exception as e:
             print(f"Error processing file: {e}")
             return jsonify({'error': 'Error processing file'}), 500
-
+@app.route('/view_file/<path:filename>')
+def view_file(filename):
+    try:
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        
+        # Validate the file path is within UPLOAD_FOLDER
+        if not os.path.abspath(file_path).startswith(os.path.abspath(app.config['UPLOAD_FOLDER'])):
+            return jsonify({'error': 'Access denied'}), 403
+        
+        if not os.path.exists(file_path):
+            return jsonify({'error': 'File not found'}), 404
+        
+        # Get file extension
+        ext = os.path.splitext(filename)[1].lower()
+        
+        # Handle different file types
+        if ext in ['.pdf', '.png', '.jpg', '.jpeg', '.gif']:
+            return send_file(file_path)
+            
+        elif ext in ['.xlsx', '.xls']:
+            # Convert Excel to HTML for viewing
+            df = pd.read_excel(file_path)
+            html_content = df.to_html(classes='table table-striped', index=False)
+            return html_content
+            
+        elif ext in ['.docx', '.doc']:
+            # Convert DOC/DOCX to HTML for viewing
+            doc = Document(file_path)
+            html_content = []
+            for para in doc.paragraphs:
+                html_content.append(f'<p>{para.text}</p>')
+            return '\n'.join(html_content)
+            
+        else:
+            return jsonify({'error': 'Unsupported file type'}), 400
+            
+    except Exception as e:
+        print(f"Error viewing file: {e}")
+        return jsonify({'error': 'Error processing file'}), 500
 @app.route('/search')
 def search():
     query = request.args.get('query', '').lower()
@@ -331,7 +369,94 @@ def search():
                             results.append({'name': item, 'path': relative_path, 'type': 'file'})
 
     return jsonify(results)
+@app.route('/extract_text/<path:filename>')
+def extract_text(filename):
+    try:
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        print(f"Processing file: {file_path}")  # Debug log
+        
+        # Validate file path
+        if not os.path.abspath(file_path).startswith(os.path.abspath(app.config['UPLOAD_FOLDER'])):
+            return jsonify({'error': 'Access denied'}), 403
+        
+        if not os.path.exists(file_path):
+            return jsonify({'error': 'File not found'}), 404
+
+        ext = os.path.splitext(filename)[1].lower()
+        
+        if ext == '.pdf':
+            try:
+                # Convert PDF to images
+                images = convert_from_path(file_path, poppler_path=POPPLER_PATH)
+                text_blocks = []
+                
+                for page_num, image in enumerate(images, 1):
+                    try:
+                        # Get OCR data with bounding boxes
+                        data = pytesseract.image_to_data(image, output_type=pytesseract.Output.DICT)
+                        
+                        for i in range(len(data['text'])):
+                            if data['text'][i].strip():
+                                text_blocks.append({
+                                    'text': data['text'][i],
+                                    'bbox': {
+                                        'x': data['left'][i],
+                                        'y': data['top'][i] + (page_num - 1) * image.size[1],
+                                        'width': data['width'][i],
+                                        'height': data['height'][i]
+                                    },
+                                    'page': page_num
+                                })
+                        
+                    except Exception as e:
+                        print(f"Error processing PDF page {page_num}: {e}")
+                        continue
+                
+                return jsonify({'text': text_blocks})
+                
+            except Exception as e:
+                print(f"Error processing PDF: {e}")
+                return jsonify({'error': f'PDF processing error: {str(e)}'}), 500
+            
+        elif ext in ['.png', '.jpg', '.jpeg', '.gif']:
+            try:
+                # Process image
+                with Image.open(file_path) as image:
+                    # Convert image to RGB if necessary
+                    if image.mode not in ('L', 'RGB'):
+                        image = image.convert('RGB')
+                    
+                    # Get OCR data
+                    data = pytesseract.image_to_data(image, output_type=pytesseract.Output.DICT)
+                    
+                    text_blocks = []
+                    for i in range(len(data['text'])):
+                        if data['text'][i].strip():
+                            text_blocks.append({
+                                'text': data['text'][i],
+                                'bbox': {
+                                    'x': data['left'][i],
+                                    'y': data['top'][i],
+                                    'width': data['width'][i],
+                                    'height': data['height'][i]
+                                }
+                            })
+                    
+                    return jsonify({'text': text_blocks})
+                    
+            except Exception as e:
+                print(f"Error processing image: {e}")
+                return jsonify({'error': f'Image processing error: {str(e)}'}), 500
+            
+        else:
+            return jsonify({'error': 'Unsupported file type'}), 400
+            
+    except Exception as e:
+        print(f"Error extracting text: {e}")
+        print(traceback.format_exc())  # Print full traceback for debugging
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+
