@@ -1,0 +1,17 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\..\\..\\..\\..\\AppData\\Local\\Temp\\2987a6a1-c54a-4885-a1b8-0ca22b097899_docs-1.11.zip.899\\docs-1.11\\docs-web\\src\\main\\webapp\\src\\app\\docs\\app.js"
+        }
+    ]
+}

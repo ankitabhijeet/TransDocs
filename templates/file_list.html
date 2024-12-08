@@ -1,0 +1,18 @@
+﻿{% for folder in folders %}
+<li class="list-group-item d-flex justify-content-between align-items-center">
+    <div>
+        <input type="checkbox" class="form-check-input me-2" data-type="folder" data-name="{{ folder }}">
+        <i class="fas fa-folder text-warning"></i>
+        <a href="#" class="folder-link" data-path="{{ (current_path + '/' + folder).strip('/') }}">{{ folder }}</a>
+    </div>
+</li>
+{% endfor %}
+{% for file in files %}
+<li class="list-group-item d-flex justify-content-between align-items-center">
+    <div>
+        <input type="checkbox" class="form-check-input me-2" data-type="file" data-name="{{ file }}">
+        <i class="fas fa-file text-primary"></i>
+        {{ file }}
+    </div>
+</li>
+{% endfor %}
