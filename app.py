@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, send_file, jsonify
 import os
 import shutil
@@ -455,8 +456,7 @@ def extract_text(filename):
         print(f"Error extracting text: {e}")
         print(traceback.format_exc())  # Print full traceback for debugging
         return jsonify({'error': str(e)}), 500
-
-
 if __name__ == '__main__':
     app.run(debug=True)
+
 
