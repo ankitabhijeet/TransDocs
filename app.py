@@ -1,12 +1,12 @@
 
-from flask import Flask, render_template, request, send_file, jsonify
+from flask import Flask, render_template, request, send_file, jsonify,abort
 import os
 import shutil
 from werkzeug.utils import secure_filename
 import subprocess
 import traceback
 import tempfile
-from PIL import Image
+from PIL import Image,ImageDraw
 import pytesseract
 from pdf2image import convert_from_path
 from docx import Document
