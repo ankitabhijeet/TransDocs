@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, send_file, jsonify,abort
+from flask import Flask, render_template, request, send_file, jsonify,abort,redirect,url_for
 import os
 import shutil
 from werkzeug.utils import secure_filename
@@ -15,13 +15,19 @@ from pptx.enum.shapes import MSO_SHAPE_TYPE
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import io
+from language import init_babel, get_translation
+from datetime import datetime
+from TransDocs.Backend.functionality.recyclebin import recycle_bin_bp
 #update 
 #update 1
 
 app = Flask(__name__)
+app.register_blueprint(recycle_bin_bp)
+init_babel(app)
 app.config['UPLOAD_FOLDER'] = os.path.abspath('uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 * 1024  # 16GB max file size
-
+# storing file details
+file_data_store= {}
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
@@ -178,23 +184,28 @@ def home():
 def list_files():
     path = request.args.get('path', '')
     full_path = os.path.abspath(os.path.join(app.config['UPLOAD_FOLDER'], path))
-    
+
     # Ensure the path is within the UPLOAD_FOLDER
     if not full_path.startswith(os.path.abspath(app.config['UPLOAD_FOLDER'])):
         return jsonify({'error': 'Access denied'}), 403
-    
+
     if not os.path.exists(full_path) or not os.path.isdir(full_path):
         return jsonify({'error': 'Folder not found'}), 404
-    
+
     files = []
     folders = []
     for item in os.listdir(full_path):
         item_path = os.path.join(full_path, item)
         if os.path.isfile(item_path) and not item.endswith('.txt'):
-            files.append(item)
+            file_details = {
+                'name': item,
+                'size': f"{os.path.getsize(item_path) / 1024:.2f} KB",
+                'date_uploaded': datetime.fromtimestamp(os.path.getmtime(item_path)).strftime('%Y-%m-%d %H:%M:%S')
+            }
+            files.append(file_details)
         elif os.path.isdir(item_path):
             folders.append(item)
-    
+
     return render_template('file_list.html', files=files, folders=folders, current_path=path)
 
 def handle_error(error):
@@ -283,6 +294,7 @@ def download_converted(filename):
     return jsonify({'error': 'Converted file not found'}), 404
 
 @app.route('/upload', methods=['POST'])
+
 def upload_file():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
@@ -293,7 +305,19 @@ def upload_file():
     if file:
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], parent_path, filename)
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
         file.save(file_path)
+
+        # Save file details
+        file_details = {
+            'name': file.filename,
+            'type': file.filename.split('.')[-1],  # Get the file extension
+            'size': f"{os.path.getsize(file_path) / 1024:.2f} KB",
+            'date_uploaded': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'filepath': file_path
+        }
+        file_data_store[file.filename] = file_details
+        return jsonify({'message': 'File uploaded successfully!', 'file_details': file_details})
         # Extract and store content for searching
         try:
             content = process_document(file_path)
@@ -456,6 +480,30 @@ def extract_text(filename):
         print(f"Error extracting text: {e}")
         print(traceback.format_exc())  # Print full traceback for debugging
         return jsonify({'error': str(e)}), 500
+    
+
+# Route to handle language selection
+@app.route('/set_language', methods=['POST'])
+def set_language():
+    selected_language = request.form.get('language')
+    return get_translation(selected_language)
+
+@app.route('/reminder')
+def reminder_page():
+    return render_template('reminder.html')  # Reminder page with the form
+
+@app.route('/reminder/add_reminder', methods=['POST'])
+def add_reminder():
+    data = request.get_json()
+    title = data.get('title')
+    date = data.get('date')
+    time = data.get('time')
+    toggle = data.get('toggle')
+
+    # Call the reminder function here
+    response = add_reminder(title, date, time, toggle)
+    return jsonify(response)  # Return the response from the function
+
 if __name__ == '__main__':
     app.run(debug=True)
 

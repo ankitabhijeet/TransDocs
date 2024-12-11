@@ -115,15 +115,42 @@
     </style>
 </head>
 <body>
-    <div class="floating-shapes"></div>
-    <div class="language-control">
-        <select id="languageSelect">
+<div class="floating-shapes"></div>
+<div class="language-control">
+    <form id="language-form">
+        <select id="language-dropdown" name="language">
             <option value="en">English</option>
             <option value="es">Español</option>
             <option value="fr">Français</option>
             <option value="de">Deutsch</option>
         </select>
-    </div>
+        <button type="submit">Switch Language</button>
+    </form>
+</div>
+<div id="response"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#language-form').on('submit', function (event) {
+            event.preventDefault(); // Prevent form from reloading the page
+
+            const language = $('#language-dropdown').val(); // Get selected language
+
+            $.ajax({
+                url: '/set_language', // Backend route for language handling
+                method: 'POST',
+                data: { language: language },
+                success: function (response) {
+                    $('#response').html(response.message); // Display response from backend
+                },
+                error: function () {
+                    $('#response').html('Error switching language.');
+                }
+            });
+        });
+    });
+</script>
     <div class="login-container">
         <div class="logo-container">
             <svg class="logo" viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
